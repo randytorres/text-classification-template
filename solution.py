@@ -2,44 +2,52 @@ from typing import Dict, Any
 
 def predict(report: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Predict medical report classifications including specialty, urgency, and follow-up need.
+    Predict specialty, urgency, and follow-up need for a medical report.
     
     Args:
-        report: Dictionary containing report data with the following structure:
+        report: Dictionary containing report data
             {
-                "report_id": str,          # Unique identifier for the report
-                "content": str,            # Medical report text content
-                "metadata": Dict[str, Any] # Additional metadata about the report
+                "report_id": str,
+                "content": str,
+                "metadata": Dict[str, Any]
             }
     
     Returns:
-        Dictionary containing predictions with the following structure:
+        Dictionary with predictions
             {
-                "specialty": str,     # One of: ["Cardiology", "Neurology", "Oncology", 
-                                     #          "Internal Medicine", "Emergency Medicine", "Other"]
-                "urgency": str,       # One of: ["Emergency", "Urgent", "Routine"]
-                "follow_up": bool     # Whether the patient needs follow-up care
+                "specialty": str,
+                "urgency": str,
+                "follow_up": bool
             }
-    
-    Example:
-        >>> report = {
-        ...     "report_id": "12345",
-        ...     "content": "Patient presents with severe chest pain and shortness of breath...",
-        ...     "metadata": {"age": 65, "gender": "M"}
-        ... }
-        >>> predict(report)
-        {
-            "specialty": "Cardiology",
-            "urgency": "Emergency",
-            "follow_up": True
-        }
     """
-    # Your implementation here
-    # Feel free to use any machine learning models or rule-based systems
-    # Just ensure your predictions match the expected format
+    # Extract the report content
+    content = report["content"].lower()
+    
+    # Simple keyword-based classification
+    
+    # Determine specialty
+    specialty = "general"
+    if "heart" in content or "cardiac" in content:
+        specialty = "cardiology"
+    elif "brain" in content or "neuro" in content:
+        specialty = "neurology"
+    elif "bone" in content or "fracture" in content:
+        specialty = "orthopedics"
+    
+    # Determine urgency
+    urgency = "routine"
+    urgent_keywords = ["emergency", "urgent", "critical", "severe", "immediately"]
+    if any(keyword in content for keyword in urgent_keywords):
+        urgency = "urgent"
+    
+    # Determine follow-up need
+    follow_up = False
+    follow_up_keywords = ["follow up", "follow-up", "return", "check again", "monitor"]
+    if any(keyword in content for keyword in follow_up_keywords):
+        follow_up = True
     
     return {
-        "specialty": "Internal Medicine",  # Default prediction
-        "urgency": "Routine",             # Default prediction
-        "follow_up": False                # Default prediction
+        "specialty": specialty,
+        "urgency": urgency,
+        "follow_up": follow_up
     }
