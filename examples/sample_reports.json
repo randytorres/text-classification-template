@@ -1,0 +1,58 @@
+{
+    "reports": [
+        {
+            "report_id": "12345",
+            "content": "Patient presents with severe chest pain and shortness of breath. ECG shows ST elevation in leads V1-V4. Immediate cardiac consultation recommended.",
+            "metadata": {
+                "age": 65,
+                "gender": "M",
+                "vital_signs": {
+                    "bp": "160/95",
+                    "hr": 110,
+                    "temp": 37.2
+                }
+            },
+            "expected_predictions": {
+                "specialty": "Cardiology",
+                "urgency": "Emergency",
+                "follow_up": true
+            }
+        },
+        {
+            "report_id": "12346",
+            "content": "Routine follow-up for diabetes management. Blood sugar levels well-controlled with current medication. No new complaints.",
+            "metadata": {
+                "age": 52,
+                "gender": "F",
+                "vital_signs": {
+                    "bp": "128/82",
+                    "hr": 76,
+                    "temp": 36.8
+                }
+            },
+            "expected_predictions": {
+                "specialty": "Internal Medicine",
+                "urgency": "Routine",
+                "follow_up": true
+            }
+        },
+        {
+            "report_id": "12347",
+            "content": "Patient reports persistent headaches and visual disturbances for the past week. Neurological examination shows mild left-sided weakness.",
+            "metadata": {
+                "age": 45,
+                "gender": "F",
+                "vital_signs": {
+                    "bp": "135/88",
+                    "hr": 82,
+                    "temp": 37.0
+                }
+            },
+            "expected_predictions": {
+                "specialty": "Neurology",
+                "urgency": "Urgent",
+                "follow_up": true
+            }
+        }
+    ]
+}
