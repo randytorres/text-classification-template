@@ -15,7 +15,6 @@ You need to implement a prediction system that can:
 2. Implement your solution in `solution.py`
 3. Push your changes to trigger evaluation
 
-
 ## Implementation Details
 
 ### Input Format
