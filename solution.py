@@ -1,53 +1,103 @@
 from typing import Dict, Any
+import logging
 
-def predict(report: Dict[str, Any]) -> Dict[str, Any]:
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+def predict(report: str | Dict[str, Any]) -> Dict[str, Any]:
     """
     Predict specialty, urgency, and follow-up need for a medical report.
     
     Args:
-        report: Dictionary containing report data
-            {
-                "report_id": str,
-                "content": str,
-                "metadata": Dict[str, Any]
-            }
+        report: The medical report text, either as a string or a dictionary with a 'text' field
+               If dictionary, should have format: {"text": str}
     
     Returns:
         Dictionary with predictions
             {
-                "specialty": str,
-                "urgency": str,
-                "follow_up": bool
+                "specialty": str,  # One of: ["cardiology", "endocrinology", "rheumatology", "neurology", "internal_medicine"]
+                "urgency": str,    # One of: ["emergency", "urgent", "routine", "non_urgent"]
+                "follow_up": str   # One of: ["required", "recommended", "scheduled"]
             }
+    
+    Example:
+        >>> text = "Patient presents with severe chest pain and shortness of breath..."
+        >>> predict(text)
+        {
+            "specialty": "cardiology",
+            "urgency": "emergency",
+            "follow_up": "required"
+        }
+        
+        >>> report = {"text": "Patient presents with severe chest pain..."}
+        >>> predict(report)
+        {
+            "specialty": "cardiology",
+            "urgency": "emergency",
+            "follow_up": "required"
+        }
     """
-    # Extract the report content
-    content = report["content"].lower()
+    logger.info(f"Received report: {report}")
+    logger.info(f"Report type: {type(report)}")
     
-    # Simple keyword-based classification
+    # Handle both string and dictionary inputs
+    if isinstance(report, dict):
+        if 'text' not in report:
+            raise ValueError("Dictionary input must have a 'text' field")
+        text = report['text']
+    else:
+        text = report
     
-    # Determine specialty
-    specialty = "general"
-    if "heart" in content or "cardiac" in content:
+    if not isinstance(text, str):
+        raise ValueError(f"Text must be a string, got {type(text)}")
+    
+    # Convert to lowercase for case-insensitive matching
+    text = text.lower()
+    logger.info(f"Lowercase text: {text}")
+    
+    # Determine specialty based on keywords
+    specialty = "internal_medicine"  # default
+    if any(word in text for word in ["heart", "chest pain", "cardiac", "ecg", "ekg"]):
         specialty = "cardiology"
-    elif "brain" in content or "neuro" in content:
+    elif any(word in text for word in ["diabetes", "thyroid", "hormone", "blood sugar"]):
+        specialty = "endocrinology"
+    elif any(word in text for word in ["joint", "arthritis", "inflammation"]):
+        specialty = "rheumatology"
+    elif any(word in text for word in ["brain", "neuro", "headache", "seizure"]):
         specialty = "neurology"
-    elif "bone" in content or "fracture" in content:
-        specialty = "orthopedics"
+    logger.info(f"Determined specialty: {specialty}")
     
-    # Determine urgency
-    urgency = "routine"
-    urgent_keywords = ["emergency", "urgent", "critical", "severe", "immediately"]
-    if any(keyword in content for keyword in urgent_keywords):
+    # Determine urgency based on critical keywords
+    urgency = "routine"  # default
+    emergency_keywords = ["severe", "critical", "emergency", "immediate", "stat", "acute", "unstable"]
+    urgent_keywords = ["urgent", "concerning", "worrisome", "deteriorating"]
+    non_urgent_keywords = ["chronic", "stable", "mild", "moderate", "routine", "well-controlled"]
+    
+    if any(word in text for word in emergency_keywords):
+        urgency = "emergency"
+    elif any(word in text for word in urgent_keywords):
         urgency = "urgent"
+    elif any(word in text for word in non_urgent_keywords):
+        urgency = "non_urgent"
+    else:
+        urgency = "routine"
+    logger.info(f"Determined urgency: {urgency}")
     
-    # Determine follow-up need
-    follow_up = False
-    follow_up_keywords = ["follow up", "follow-up", "return", "check again", "monitor"]
-    if any(keyword in content for keyword in follow_up_keywords):
-        follow_up = True
+    # Determine if follow-up is needed
+    follow_up = "recommended"  # default
+    required_keywords = ["immediate", "required", "critical", "severe", "emergency"]
+    scheduled_keywords = ["schedule", "routine", "well-controlled", "continue"]
     
-    return {
+    if any(word in text for word in required_keywords):
+        follow_up = "required"
+    elif any(word in text for word in scheduled_keywords):
+        follow_up = "scheduled"
+    logger.info(f"Determined follow-up: {follow_up}")
+    
+    result = {
         "specialty": specialty,
         "urgency": urgency,
         "follow_up": follow_up
     }
+    logger.info(f"Returning result: {result}")
+    return result
