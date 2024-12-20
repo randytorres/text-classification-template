@@ -4,6 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
+
 def predict(report: str | Dict[str, Any]) -> Dict[str, Any]:
     """
     Predict specialty, urgency, and follow-up need for a medical report.
